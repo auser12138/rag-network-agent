@@ -1,0 +1,26 @@
+# 虚拟环境（1.5GB，绝不能提交）
+venv/
+env/
+
+# 密钥（绝对不能提交）
+.env
+.streamlit/secrets.toml
+
+# Python 缓存
+__pycache__/
+*.pyc
+*.pyo
+
+# 向量库（可重建的产物，不是源码）
+db/
+
+# 工具和缓存
+.ruff_cache/
+.agents/
+.codex/
+
+# 临时文件
+测试数据/
+_backup/
+*.log
+测试/qa_report.md
