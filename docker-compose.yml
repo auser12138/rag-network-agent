@@ -5,7 +5,7 @@ services:
       MYSQL_ROOT_PASSWORD: rootpass_change_me
       MYSQL_DATABASE: mydb
       MYSQL_USER: myuser
-      MYSQL_PASSWORD: 换成你的密码
+      MYSQL_PASSWORD: ubuntu
     volumes:
       - mysql_data:/var/lib/mysql                              # 数据持久化
       - ./deploy/init.sql:/docker-entrypoint-initdb.d/init.sql:ro   # 首次启动自动建表
