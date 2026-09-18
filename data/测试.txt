@@ -1,0 +1,521 @@
+以下为转化后的文本：
+
+## 接口与物理层
+
+1. [easy] 交换机接口显示down，应该按照什么顺序排查？
+   来源：troubleshooting/接口down故障处理.md；manuals/Cisco交换机运维手册.md
+   关键词：show ip interface brief、物理链路、对端接口、shutdown、网线、光模块
+   答案：先区分administratively down、down/down和up/down，再检查物理链路、对端接口、接口配置和错误计数器。
+
+2. [easy] Cisco上如何快速查看所有接口的IP和状态？
+   来源：manuals/Cisco交换机运维手册.md
+   关键词：show ip interface brief
+   答案：使用show ip interface brief查看接口IP地址、Status和Protocol状态。
+
+3. [easy] Cisco接口处于administratively down通常说明什么？
+   来源：troubleshooting/接口down故障处理.md；manuals/Cisco交换机运维手册.md
+   关键词：administratively down、shutdown、接口配置
+   答案：通常说明接口被管理员配置为shutdown，应确认是否符合变更要求。
+
+4. [medium] 接口物理up但协议状态down时应该重点检查什么？
+   来源：troubleshooting/接口down故障处理.md
+   关键词：up/down、二层、三层、VLAN、协议
+   答案：物理链路已正常，应重点检查二层、三层和相关协议配置。
+
+5. [easy] 如何查看Cisco接口CRC和错误计数？
+   来源：troubleshooting/CRC错误排查.md；manuals/Cisco交换机运维手册.md
+   关键词：show interfaces、show interfaces counters errors、CRC、input errors
+   答案：使用show interfaces <interface>和show interfaces counters errors查看错误计数器。
+
+6. [medium] CRC错误持续增长通常应该从哪些方面排查？
+   来源：troubleshooting/CRC错误排查.md
+   关键词：网线、光纤、光模块、接口硬件、速率、双工
+   答案：优先检查物理介质、光模块、接口硬件以及速率/双工协商。
+
+7. [medium] 如何判断CRC问题更可能出在网线还是交换机端口？
+   来源：troubleshooting/CRC错误排查.md
+   关键词：更换网线、更换端口、错误计数器、问题跟随
+   答案：通过更换网线、光模块和端口，观察错误是否停止或跟随故障点移动来定位。
+
+8. [easy] 交换机接口频繁UP/DOWN，应该先看什么？
+   来源：troubleshooting/接口down故障处理.md；incidents/INC-001.md
+   关键词：LINK UP/DOWN、日志、错误计数器、物理链路
+   答案：先看接口日志和状态变化时间，再检查错误计数器、对端和物理介质。
+
+9. [medium] 为什么更换网线后CRC错误可能停止增长？
+   来源：troubleshooting/CRC错误排查.md；incidents/INC-001.md
+   关键词：物理链路、介质、CRC、网线
+   答案：如果原网线存在物理质量问题，更换后可消除传输错误，使CRC不再增长。
+
+10. [easy] Juniper上查看接口简要状态使用什么命令？
+    来源：manuals/Juniper交换机运维手册.md
+    关键词：show interfaces terse
+    答案：使用show interfaces terse。
+
+11. [medium] Juniper接口排查时为什么要关注CRC和Drops？
+    来源：manuals/Juniper交换机运维手册.md
+    关键词：CRC errors、Drops、接口统计
+    答案：它们可以帮助判断物理链路错误、拥塞或接口异常。
+
+12. [easy] 交换机接口down故障处理时为什么要先确认状态类型？
+    来源：troubleshooting/接口down故障处理.md
+    关键词：administratively down、down/down、up/down
+    答案：不同状态对应不同故障层级，先分类能缩小排查范围。
+
+13. [medium] 接口有input errors但没有CRC，下一步应关注哪些指标？
+    来源：manuals/Cisco交换机运维手册.md；troubleshooting/CRC错误排查.md
+    关键词：input errors、output errors、Drops、速率、双工
+    答案：继续查看output errors、drops、队列丢弃、速率双工以及对端接口。
+
+14. [medium] 生产环境接口故障时为什么不能直接shutdown/no shutdown？
+    来源：troubleshooting/接口down故障处理.md；operation/网络变更操作规范.md
+    关键词：生产环境、变更、审批、回退
+    答案：这属于配置操作，可能扩大影响，应先确认授权和变更流程。
+
+15. [medium] 接口故障排查中如何判断问题在本端还是对端？
+    来源：troubleshooting/接口down故障处理.md；troubleshooting/CRC错误排查.md
+    关键词：对端接口、计数器、更换端口、更换链路
+    答案：同时检查两端状态和错误计数器，并通过替换介质或端口观察故障是否移动。
+
+## BGP
+
+1. [easy] BGP邻居从Established变成Idle，首先应该检查什么？
+   来源：troubleshooting/BGP邻居down故障处理.md
+   关键词：show ip bgp summary、neighbor、Idle
+   答案：先确认状态变化和日志，再检查邻居IP、AS号、路由可达性、TCP/179以及策略。
+
+2. [easy] BGP使用哪个TCP端口？
+   来源：troubleshooting/BGP邻居down故障处理.md
+   关键词：TCP 179
+   答案：BGP使用TCP 179建立会话。
+
+3. [easy] Cisco查看BGP邻居概要使用什么命令？
+   来源：troubleshooting/BGP邻居down故障处理.md；manuals/Cisco交换机运维手册.md
+   关键词：show ip bgp summary
+   答案：使用show ip bgp summary。
+
+4. [medium] BGP邻居处于Active状态一般需要检查哪些方向？
+   来源：troubleshooting/BGP邻居down故障处理.md
+   关键词：TCP/179、路由可达性、ACL、防火墙、peer IP
+   答案：重点检查邻居地址可达性、TCP/179、ACL/防火墙和邻居配置。
+
+5. [medium] BGP邻居建立失败时为什么要检查邻居IP可达性？
+   来源：troubleshooting/BGP邻居down故障处理.md
+   关键词：路由、邻居地址、可达性
+   答案：BGP需要先与邻居建立TCP会话，没有到邻居地址的可达路径就无法建立会话。
+
+6. [medium] BGP排查时哪些配置参数最容易出现不一致？
+   来源：troubleshooting/BGP邻居down故障处理.md
+   关键词：AS号、update-source、ebgp-multihop、authentication、VRF
+   答案：重点检查peer IP、AS号、update-source、ebgp-multihop、认证、源地址和VRF。
+
+7. [medium] 防火墙是否可能导致BGP邻居down？为什么？
+   来源：troubleshooting/BGP邻居down故障处理.md；logs/firewall_001.log
+   关键词：TCP 179、ACL、防火墙、策略
+   答案：可能。BGP依赖TCP 179，安全策略可能阻断该连接。
+
+8. [easy] BGP状态Established代表什么？
+   来源：manuals/Cisco交换机运维手册.md；troubleshooting/BGP邻居down故障处理.md
+   关键词：Established、邻居建立
+   答案：表示BGP邻居会话已经成功建立并可进行路由交换。
+
+9. [medium] BGP日志显示Peer closed the session应该怎么处理？
+   来源：troubleshooting/BGP邻居down故障处理.md；incidents/INC-002.md
+   关键词：Peer closed、TCP reset、对端、日志
+   答案：结合TCP reset和邻居状态判断是否由对端主动关闭，再检查对端、链路和配置。
+
+10. [medium] 为什么BGP故障处理不建议第一时间重启BGP进程？
+    来源：troubleshooting/BGP邻居down故障处理.md
+    关键词：不要直接重启、定位故障层级、业务影响
+    答案：重启可能扩大影响并掩盖根因，应先定位路由、TCP、策略、配置或对端问题。
+
+11. [medium] BGP邻居恢复后还需要做什么？
+    来源：troubleshooting/BGP邻居down故障处理.md；incidents/INC-002.md
+    关键词：监控、恢复时间、日志、路由
+    答案：确认邻居和路由恢复并持续监控是否再次Down，同时记录恢复时间。
+
+12. [hard] 日志显示TCP连接被对端reset，同时BGP邻居进入Active，应如何组合判断？
+    来源：logs/router_001.log；troubleshooting/BGP邻居down故障处理.md
+    关键词：TCP reset、Active、对端、TCP 179
+    答案：说明BGP TCP会话发生中断，应继续检查对端、TCP/179策略和链路。
+
+13. [hard] BGP邻居长期Active但邻居地址可以ping通，下一步查什么？
+    来源：troubleshooting/BGP邻居down故障处理.md
+    关键词：TCP 179、ACL、防火墙、AS号、配置
+    答案：Ping正常不能证明TCP/179正常，应检查TCP/179、ACL、防火墙和AS配置。
+
+14. [hard] BGP邻居已经Established但部分路由没有学到，应该从哪些方面检查？
+    来源：manuals/Cisco交换机运维手册.md；troubleshooting/BGP邻居down故障处理.md
+    关键词：show ip bgp、路由策略、邻居、路由表
+    答案：检查BGP路由表、发布/接收策略以及路由是否安装进IP路由表。
+
+15. [medium] 如何确认BGP邻居状态是否稳定而不是刚刚恢复？
+    来源：troubleshooting/BGP邻居down故障处理.md；incidents/INC-002.md
+    关键词：日志、持续监控、重复发生、恢复时间
+    答案：查看状态变化日志并持续观察，确认没有再次Down。
+
+## OSPF
+
+1. [easy] Cisco查看OSPF邻居使用什么命令？
+   来源：manuals/Cisco交换机运维手册.md；troubleshooting/OSPF邻居异常处理.md
+   关键词：show ip ospf neighbor
+   答案：使用show ip ospf neighbor。
+
+2. [easy] Juniper查看OSPF邻居使用什么命令？
+   来源：manuals/Juniper交换机运维手册.md；troubleshooting/OSPF邻居异常处理.md
+   关键词：show ospf neighbor
+   答案：使用show ospf neighbor。
+
+3. [medium] OSPF邻居一直停留在Init状态要重点检查什么？
+   来源：troubleshooting/OSPF邻居异常处理.md
+   关键词：Hello、接口参数、Area、认证
+   答案：检查Hello报文交换，以及Area、Hello/Dead interval、认证和接口配置。
+
+4. [medium] OSPF邻居卡在ExStart或Exchange时首先考虑什么问题？
+   来源：troubleshooting/OSPF邻居异常处理.md
+   关键词：MTU、Router ID、ExStart、Exchange
+   答案：重点检查MTU不一致、Router ID重复及其他接口参数。
+
+5. [medium] OSPF两端Area不一致会有什么影响？
+   来源：troubleshooting/OSPF邻居异常处理.md
+   关键词：Area、邻居建立
+   答案：Area不一致时会影响OSPF邻居正常建立。
+
+6. [medium] OSPF邻居为什么最终应该进入Full状态？
+   来源：troubleshooting/OSPF邻居异常处理.md
+   关键词：Full、邻居状态、LSDB
+   答案：Full表示邻居已完成必要的邻接建立和数据库同步。
+
+7. [hard] OSPF邻居从FULL变成DOWN，结合日志应该如何排查？
+   来源：logs/router_001.log；troubleshooting/OSPF邻居异常处理.md
+   关键词：FULL to DOWN、invalid packet、接口、链路
+   答案：结合时间线检查接口、链路、OSPF报文、Area、认证和MTU。
+
+8. [medium] OSPF排障为什么要同时检查Hello和Dead interval？
+   来源：troubleshooting/OSPF邻居异常处理.md
+   关键词：Hello interval、Dead interval
+   答案：两端定时器参数需要匹配，否则可能导致邻居无法建立或稳定维持。
+
+9. [hard] OSPF邻居正常但业务仍然不通，还要检查哪些内容？
+   来源：manuals/Cisco交换机运维手册.md；troubleshooting/OSPF邻居异常处理.md
+   关键词：路由表、show ip route、下一跳、ARP
+   答案：检查目标路由、下一跳、路由表和ARP；邻居正常不代表业务路径一定正确。
+
+10. [medium] 重复Router ID可能导致什么问题？
+    来源：troubleshooting/OSPF邻居异常处理.md
+    关键词：Router ID、重复
+    答案：可能导致OSPF邻接和LSA处理异常，应确保唯一。
+
+11. [hard] OSPF邻居长期2-Way是否一定代表故障？
+    来源：troubleshooting/OSPF邻居异常处理.md
+    关键词：2-Way、邻居状态、网络类型
+    答案：不一定，要结合网络类型和设备角色判断，并检查网络类型等参数。
+
+12. [medium] 如何判断OSPF问题更可能是链路问题还是参数问题？
+    来源：troubleshooting/OSPF邻居异常处理.md
+    关键词：接口状态、VLAN、丢包、Area、MTU
+    答案：先检查接口与二层链路，再核对Area、计时器、认证、MTU和网络类型。
+
+13. [hard] 日志出现Received invalid packet，同时OSPF邻居掉线，应如何关联分析？
+    来源：logs/router_001.log；troubleshooting/OSPF邻居异常处理.md
+    关键词：invalid packet、邻居DOWN、接口、OSPF
+    答案：把日志时间与邻居状态对应，检查接口、报文和Area、认证、MTU等参数。
+
+## 二层网络
+
+1. [easy] Cisco查看VLAN配置使用什么命令？
+   来源：manuals/Cisco交换机运维手册.md
+   关键词：show vlan brief
+   答案：使用show vlan brief。
+
+2. [easy] 如何查看Cisco交换机Trunk接口？
+   来源：manuals/Cisco交换机运维手册.md
+   关键词：show interfaces trunk
+   答案：使用show interfaces trunk。
+
+3. [medium] VLAN配置正确但终端仍不能通信，下一步应该检查什么？
+   来源：manuals/Cisco交换机运维手册.md；troubleshooting/接口down故障处理.md
+   关键词：Trunk、接口VLAN、MAC、ARP
+   答案：检查Trunk允许列表、端口VLAN、链路状态以及MAC学习和ARP。
+
+4. [medium] 如何检查交换机是否发生STP拓扑变化？
+   来源：manuals/Cisco交换机运维手册.md
+   关键词：show spanning-tree、拓扑变化
+   答案：使用show spanning-tree查看STP状态、根桥、端口角色和拓扑变化。
+
+5. [medium] 日志中出现Loop guard blocking port说明应该关注什么？
+   来源：logs/switch_001.log；manuals/Cisco交换机运维手册.md
+   关键词：Loop Guard、STP、端口、拓扑
+   答案：应检查STP、端口角色、链路拓扑和是否存在环路或异常BPDU。
+
+6. [hard] 交换机检测到loopback后为什么可能触发STP相关保护？
+   来源：logs/switch_001.log；manuals/Cisco交换机运维手册.md
+   关键词：loopback、STP、Loop Guard、环路
+   答案：二层环路会增加广播风暴和拓扑异常风险，STP保护机制可能阻塞端口。
+
+7. [medium] 如何查看LACP/EtherChannel聚合状态？
+   来源：manuals/Cisco交换机运维手册.md
+   关键词：show etherchannel summary、LACP、Port-Channel
+   答案：使用show etherchannel summary和show interfaces port-channel。
+
+8. [medium] EtherChannel成员端口异常应该检查哪些配置？
+   来源：manuals/Cisco交换机运维手册.md
+   关键词：LACP、速率、双工、VLAN、Trunk
+   答案：检查LACP模式、速率、双工、VLAN和Trunk参数是否一致。
+
+9. [medium] Juniper如何查看MAC地址学习？
+   来源：manuals/Juniper交换机运维手册.md
+   关键词：show ethernet-switching table
+   答案：使用show ethernet-switching table。
+
+10. [medium] Juniper如何查看VLAN和交换接口信息？
+    来源：manuals/Juniper交换机运维手册.md
+    关键词：show vlans、show ethernet-switching interfaces
+    答案：使用show vlans和show ethernet-switching interfaces。
+
+11. [hard] 终端已经接入正确VLAN，但交换机MAC表没有学习到地址，排查顺序是什么？
+    来源：manuals/Juniper交换机运维手册.md；manuals/Cisco交换机运维手册.md
+    关键词：接口状态、VLAN、MAC地址学习、二层链路
+    答案：先确认接口和VLAN，再检查二层链路以及MAC学习情况，必要时追查对端设备。
+
+12. [medium] Trunk允许列表配置错误会造成什么现象？
+    来源：manuals/Cisco交换机运维手册.md
+    关键词：Trunk、允许列表、VLAN、业务不通
+    答案：未被允许的VLAN无法通过Trunk，可能造成跨交换机业务中断。
+
+13. [hard] STP正常但业务仍然广播异常，应该继续检查什么？
+    来源：manuals/Cisco交换机运维手册.md
+    关键词：MAC、环路、广播、接口、拓扑
+    答案：继续检查拓扑、MAC漂移、接口以及未被STP正确保护的二层环路。
+
+14. [medium] 为什么巡检中要同时关注STP和LACP？
+    来源：manuals/网络设备日常巡检规范.md；operation/交换机巡检规范.md
+    关键词：STP、LACP、二层稳定性
+    答案：STP影响二层环路和拓扑，LACP影响聚合和冗余，两者都属于关键二层状态。
+
+15. [hard] 一个聚合链路部分成员正常、部分成员异常，如何处理？
+    来源：manuals/Cisco交换机运维手册.md；operation/交换机巡检规范.md
+    关键词：EtherChannel、成员端口、LACP、配置一致性
+    答案：检查异常成员与正常成员之间的LACP、速率双工、VLAN/Trunk配置及物理链路。
+
+## DHCP
+
+1. [easy] 终端拿不到IP地址时，第一步应该检查什么？
+   来源：troubleshooting/DHCP故障排查.md
+   关键词：客户端、DHCP、VLAN、169.254.x.x
+   答案：先确认客户端DHCP功能和当前地址，再检查所在VLAN与接入链路。
+
+2. [easy] 客户端获得169.254.x.x地址通常说明什么？
+   来源：troubleshooting/DHCP故障排查.md
+   关键词：169.254.x.x、DHCP失败
+   答案：通常说明未成功获取正常DHCP地址，需要继续排查服务器、Relay、VLAN和网络策略。
+
+3. [medium] DHCP地址池正常但终端仍无法获取地址，应检查什么？
+   来源：troubleshooting/DHCP故障排查.md
+   关键词：DHCP Relay、VLAN、ACL、防火墙
+   答案：检查终端VLAN、DHCP Relay、ACL、防火墙和到DHCP服务器的连通性。
+
+4. [easy] Cisco跨网段DHCP Relay常见配置是什么？
+   来源：troubleshooting/DHCP故障排查.md
+   关键词：ip helper-address、DHCP Relay
+   答案：常见做法是在三层接口配置ip helper-address指向DHCP服务器。
+
+5. [medium] 为什么DHCP Relay配置错误会导致终端拿不到地址？
+   来源：troubleshooting/DHCP故障排查.md；incidents/INC-003.md
+   关键词：Relay、服务器地址、DHCP请求
+   答案：Relay服务器地址错误会导致DHCP请求无法转发到正确服务器。
+
+6. [hard] INC-003中终端为什么会拿到169.254.x.x？
+   来源：incidents/INC-003.md；troubleshooting/DHCP故障排查.md
+   关键词：169.254.x.x、DHCP Relay、服务器地址错误
+   答案：因为DHCP Relay服务器地址配置错误，终端没有正常收到DHCP响应。
+
+7. [medium] DHCP故障为什么还要检查防火墙？
+   来源：troubleshooting/DHCP故障排查.md
+   关键词：防火墙、安全策略、DHCP流量
+   答案：防火墙或安全策略可能阻断DHCP请求或响应。
+
+8. [hard] 终端获取到了IP但网关不通，DHCP问题还需要继续查吗？
+   来源：troubleshooting/DHCP故障排查.md；manuals/Cisco交换机运维手册.md
+   关键词：IP、网关、VLAN、ARP、三层
+   答案：DHCP成功不代表二层、ARP和三层转发一定正常，应继续检查网关和三层路径。
+
+9. [medium] DHCP故障排查完成后应该验证哪些信息？
+   来源：troubleshooting/DHCP故障排查.md
+   关键词：IP、网关、DNS、租约、连通性
+   答案：验证IP、网关、DNS、租约信息，并进行连通性测试。
+
+10. [hard] 如何从接入交换机逐段定位DHCP请求到底丢在哪里？
+    来源：troubleshooting/DHCP故障排查.md
+    关键词：VLAN、Relay、DHCP服务器、逐段测试
+    答案：依次检查终端VLAN、网关/Relay、到DHCP服务器的路径及安全策略。
+
+## 连通性
+
+1. [easy] 网络丢包故障一般先使用什么基础工具？
+   来源：troubleshooting/丢包故障排查.md
+   关键词：ping、traceroute、tracert
+   答案：先用ping和traceroute/tracert做基础连通性与路径测试。
+
+2. [medium] 为什么不能仅凭一次Ping失败就判断链路故障？
+   来源：troubleshooting/丢包故障排查.md
+   关键词：持续测试、接口计数器、路径、业务指标
+   答案：单次Ping可能受瞬时状态影响，应结合持续测试、接口计数器、路径和业务指标。
+
+3. [medium] 如何定位丢包从网络路径的哪一段开始出现？
+   来源：troubleshooting/丢包故障排查.md
+   关键词：逐段测试、客户端、接入、汇聚、核心
+   答案：从客户端向目标逐段测试，定位从哪一段开始稳定丢包。
+
+4. [medium] 丢包排查中为什么要看Queue drops？
+   来源：troubleshooting/丢包故障排查.md
+   关键词：Queue drops、拥塞、队列
+   答案：Queue drops可反映出口拥塞和队列丢弃。
+
+5. [hard] 接口没有CRC，但仍持续丢包，可能从哪些方向继续排查？
+   来源：troubleshooting/丢包故障排查.md
+   关键词：Queue drops、CPU、拥塞、路由、ECMP
+   答案：继续检查接口利用率、队列丢弃、设备资源、路由异常和ECMP路径。
+
+## 防火墙
+
+1. [medium] 防火墙日志中的action=deny代表什么？
+   来源：logs/firewall_001.log
+   关键词：action=deny、策略、阻断
+   答案：表示对应流量命中了安全策略并被拒绝。
+
+2. [medium] 日志显示到172.16.20.10的443端口被deny，应该检查什么？
+   来源：logs/firewall_001.log
+   关键词：TCP、443、策略、源地址、目的地址
+   答案：检查命中的安全策略、源/目的地址、目标端口443及是否存在后续allow策略。
+
+3. [medium] 防火墙日志出现allow后业务恢复，说明什么？
+   来源：logs/firewall_001.log
+   关键词：action=allow、策略、业务恢复
+   答案：说明对应流量已经获得放行，但仍需验证实际业务是否完全恢复。
+
+## 设备日志
+
+1. [easy] 网络设备日志在故障排查中有什么作用？
+   来源：manuals/网络设备日常巡检规范.md；incidents/INC-001.md；incidents/INC-002.md
+   关键词：时间、状态变化、异常事件、定位
+   答案：日志能提供故障时间线和接口/协议状态变化，是关联不同现象的重要证据。
+
+2. [medium] switch_001.log中Gi1/0/24发生了什么？
+   来源：logs/switch_001.log；incidents/INC-001.md
+   关键词：GigabitEthernet1/0/24、down、up、08:31、08:33
+   答案：该接口08:31短时Down，约两分钟后恢复Up。
+
+3. [medium] switch_001.log中Gi1/0/12为什么需要关注？
+   来源：logs/switch_001.log
+   关键词：loopback、Loop Guard、STP
+   答案：该端口检测到loopback并触发Loop Guard，应排查二层环路和拓扑异常。
+
+4. [medium] router_001.log中BGP邻居10.0.0.2经历了哪些状态变化？
+   来源：logs/router_001.log；incidents/INC-002.md
+   关键词：Down、Active、Established
+   答案：邻居先Down，随后Active，最后恢复Established。
+
+5. [hard] router_001.log中BGP事件和OSPF事件是否发生在同一故障时间段？
+   来源：logs/router_001.log
+   关键词：11:02、11:06、12:44、时间线
+   答案：不是。BGP事件在11:02至11:06左右，OSPF异常在12:44左右。
+
+6. [hard] firewall_001.log中为什么既有deny又有allow？
+   来源：logs/firewall_001.log
+   关键词：deny、allow、策略、时间
+   答案：不同时间的流量可能匹配不同处理结果，日志显示前两次443访问被拒绝，后一次被允许。
+
+## 运维规范
+
+1. [easy] 网络设备日常巡检至少要检查哪些设备级指标？
+   来源：manuals/网络设备日常巡检规范.md
+   关键词：CPU、内存、温度、电源、风扇、日志
+   答案：至少检查CPU、内存、温度、电源、风扇和日志告警。
+
+2. [medium] 为什么巡检要同时看接口状态和错误计数器？
+   来源：manuals/网络设备日常巡检规范.md；operation/交换机巡检规范.md
+   关键词：Up/Down、CRC、错误、丢弃
+   答案：接口UP不代表链路完全健康，错误计数器能发现隐性问题。
+
+3. [easy] 网络变更前必须准备哪些信息？
+   来源：operation/网络变更操作规范.md
+   关键词：变更目的、影响范围、操作设备、时间、回退方案
+   答案：明确变更目的、影响范围、设备、人员、时间和回退方案。
+
+4. [medium] 网络变更前为什么要做配置备份？
+   来源：operation/网络变更操作规范.md
+   关键词：配置备份、回退、基线
+   答案：便于异常时回退，也便于变更前后对比和审计。
+
+5. [medium] 变更完成后最少需要验证哪些内容？
+   来源：operation/网络变更操作规范.md
+   关键词：接口、VLAN、路由、OSPF、BGP、Ping
+   答案：至少验证接口、VLAN、路由、OSPF/BGP、连通性和日志。
+
+6. [medium] 什么情况下应该执行网络变更回退？
+   来源：operation/网络变更操作规范.md
+   关键词：异常、回退条件、业务
+   答案：当业务异常并达到预先定义的回退条件时，应按回退方案恢复。
+
+7. [easy] P1故障的基本升级原则是什么？
+   来源：operation/故障升级规范.md
+   关键词：P1、核心网络、大量用户、立即通知
+   答案：影响核心网络、大量用户或关键业务时，应立即通知网络负责人及相关业务负责人。
+
+8. [medium] 故障升级时应该提供哪些信息？
+   来源：operation/故障升级规范.md
+   关键词：开始时间、影响范围、现象、已执行操作、日志、初步判断
+   答案：提供开始时间、影响范围、现象、已执行操作、命令输出、日志、初步判断和恢复情况。
+
+9. [medium] 为什么故障升级时要提供已经执行过的操作？
+   来源：operation/故障升级规范.md
+   关键词：已执行操作、避免重复、风险
+   答案：便于接手人员了解当前处置状态，避免重复或误操作。
+
+10. [medium] 巡检记录至少应该包含哪些字段？
+    来源：manuals/网络设备日常巡检规范.md
+    关键词：设备名称、IP地址、时间、检查项目、异常现象、处理结果
+    答案：至少包括设备名称、IP、检查时间、检查项目、异常现象、处理结果和责任人。
+
+## 综合故障
+
+1. [hard] 交换机接口down、CRC持续增长、同时对端接口也出现CRC，优先怀疑哪个层面？
+   来源：troubleshooting/接口down故障处理.md；troubleshooting/CRC错误排查.md
+   关键词：物理链路、网线、光纤、光模块、对端
+   答案：优先怀疑物理链路层，包括介质、光模块及两端物理接口。
+
+2. [hard] BGP邻居down但ping邻居地址正常，如何判断问题是否可能在防火墙？
+   来源：troubleshooting/BGP邻居down故障处理.md；logs/firewall_001.log
+   关键词：Ping、TCP 179、防火墙、ACL
+   答案：Ping正常只证明ICMP可达，还要检查TCP/179是否被ACL或防火墙阻断。
+
+3. [hard] OSPF邻居卡在ExStart，同时两端接口MTU不同，最可能的排查方向是什么？
+   来源：troubleshooting/OSPF邻居异常处理.md
+   关键词：ExStart、MTU、接口参数
+   答案：优先检查并统一两端MTU，这是ExStart/Exchange异常的重要排查方向。
+
+4. [hard] 用户反馈网络丢包，接口无CRC，但出口队列有大量drops，应该重点关注什么？
+   来源：troubleshooting/丢包故障排查.md
+   关键词：Queue drops、拥塞、接口利用率
+   答案：重点关注出口拥塞、利用率和队列丢弃。
+
+5. [hard] 终端全部在同一个VLAN，部分终端无法拿到DHCP地址，交换机VLAN正常但Relay配置错误，应该如何判断根因？
+   来源：troubleshooting/DHCP故障排查.md；incidents/INC-003.md
+   关键词：VLAN正常、Relay错误、DHCP、根因
+   答案：VLAN正常而Relay服务器地址错误，因此主要根因是DHCP Relay配置错误。
+
+6. [hard] 交换机日志显示接口短时down/up，随后更换网线后稳定，如何形成故障结论？
+   来源：logs/switch_001.log；incidents/INC-001.md；troubleshooting/接口down故障处理.md
+   关键词：down/up、更换网线、稳定、物理链路
+   答案：可初步判断为物理链路质量异常，更换网线后现象消失；最终根因可结合介质检测确认。
+
+7. [hard] 一个网络变更导致BGP邻居和业务同时异常，处理时应该先恢复业务还是先查配置？
+   来源：operation/网络变更操作规范.md；troubleshooting/BGP邻居down故障处理.md
+   关键词：变更、回退方案、业务、配置、验证
+   答案：按变更方案和回退条件判断，在控制风险前提下恢复业务，同时保留证据并核对变更配置。
+
+8. [hard] 请设计一个“接口down + BGP邻居down + 丢包”的联合排查顺序。
+   来源：troubleshooting/接口down故障处理.md；troubleshooting/BGP邻居down故障处理.md；troubleshooting/丢包故障排查.md
+   关键词：接口状态、物理链路、丢包、TCP 179、BGP
+   答案：先确认接口和物理链路，再检查错误/丢包；确认基础连通性后检查邻居路由、TCP/179及BGP配置。
