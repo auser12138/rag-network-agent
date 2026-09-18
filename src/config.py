@@ -49,3 +49,5 @@ OBSERVATION_MAX = int(os.getenv("OBSERVATION_MAX", "4000"))
 data_dir = BASE_DIR / "data"
 db_dir = BASE_DIR /"db"
 COLLECTION_NAME = "kb1"
+#访问口令（为空时不校验，部署时在 .env 里设置）
+ACCESS_CODE = os.getenv("ACCESS_CODE","")

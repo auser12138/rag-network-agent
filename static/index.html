@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>网络运维故障诊断 Agent</title>
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🔧</text></svg>">
 <style>
   *{box-sizing:border-box}
   body{margin:0;font-family:system-ui,-apple-system,"Microsoft YaHei",sans-serif;
@@ -17,24 +18,61 @@
   .user{align-self:flex-end;background:#2563eb;color:#fff;border-bottom-right-radius:4px}
   .bot{align-self:flex-start;background:#fff;border:1px solid #e5e7eb;border-bottom-left-radius:4px}
   .status{align-self:flex-start;color:#6b7280;font-size:13px;font-style:italic;padding-left:6px}
+  #hints{padding:0 20px 8px;display:flex;gap:8px;flex-wrap:wrap;justify-content:center}
+  .hint{padding:8px 14px;border:1px solid #d1d5db;background:#fff;border-radius:20px;
+        font-size:13px;color:#374151;cursor:pointer;font-family:inherit}
+  .hint:hover{background:#f3f4f6}
   footer{padding:14px 20px;background:#fff;border-top:1px solid #e5e7eb;display:flex;gap:10px}
   #input{flex:1;padding:12px;border:1px solid #d1d5db;border-radius:8px;
          font-size:15px;font-family:inherit;resize:none;height:52px}
   #send{padding:0 22px;background:#2563eb;color:#fff;border:none;border-radius:8px;
         font-size:15px;cursor:pointer}
   #send:disabled{background:#9ca3af;cursor:not-allowed}
+
+  /* 口令门 */
+  .gate{position:fixed;inset:0;background:#f5f6f8;display:flex;align-items:center;
+        justify-content:center;z-index:100}
+  .gate.hide{display:none}
+  .gate-box{background:#fff;padding:32px;border-radius:12px;border:1px solid #e5e7eb;
+            width:320px;text-align:center}
+  .gate-box h2{margin:0 0 8px;font-size:18px}
+  .gate-box p{margin:0 0 18px;font-size:13px;color:#6b7280}
+  .gate-box input{width:100%;padding:11px;border:1px solid #d1d5db;border-radius:8px;
+                  font-size:15px;margin-bottom:12px}
+  .gate-box button{width:100%;padding:11px;background:#2563eb;color:#fff;border:none;
+                   border-radius:8px;font-size:15px;cursor:pointer}
+  .gate-box button:disabled{background:#9ca3af;cursor:not-allowed}
+  .gate-msg{margin-top:10px;font-size:13px;color:#dc2626;min-height:18px}
 </style>
 </head>
 <body>
+
+
+<div id="gate" class="gate">
+  <div class="gate-box">
+    <h2>访问口令</h2>
+    <p>请输入访问口令以使用本服务</p>
+    <input id="code" type="password" placeholder="访问口令">
+    <button id="login">进入</button>
+    <div id="gate-msg" class="gate-msg"></div>
+  </div>
+</div>
+
 <header>
   <h1>网络运维故障诊断 Agent</h1>
-  <p>描述故障现象，Agent 会检索知识库并给出排查方案</p>
+  <p>描述故障现象，Agent 会检索知识库并给出排查方案（当前知识库：网络运维排障手册）</p>
 </header>
 
 <div id="chat"></div>
 
+<div id="hints">
+  <button class="hint">交换机接口 Down 怎么排查？</button>
+  <button class="hint">OSPF 邻居建立失败怎么定位？</button>
+  <button class="hint">链路丢包和延迟怎么排查？</button>
+</div>
+
 <footer>
-  <textarea id="input" placeholder="例如：交换机接口 Down 怎么排查"></textarea>
+  <textarea id="input" placeholder="描述你的故障现象，例如：交换机接口 Down 怎么排查"></textarea>
   <button id="send">发送</button>
 </footer>
 
@@ -42,22 +80,74 @@
 const chat = document.getElementById("chat");
 const input = document.getElementById("input");
 const btn = document.getElementById("send");
+const hints = document.getElementById("hints");
 
-// 每个浏览器一个会话：第一次访问生成随机 ID 存在本地，之后一直复用
+
 function newSessionId() {
-  // crypto.randomUUID 只在 HTTPS 或 localhost 可用；http + IP 访问时会缺失，所以做兜底
   if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
   const buf = new Uint8Array(16);
-  crypto.getRandomValues(buf);       // getRandomValues 不受安全上下文限制
+  crypto.getRandomValues(buf);
   return Array.from(buf,b => b.toString(16).padStart(2,"0")).join("");
 }
 
 let sessionId = localStorage.getItem("session_id");
 if (!sessionId) {
   sessionId = newSessionId();
-  localStorage.setItem("session_id", sessionId);
+  localStorage.setItem("session_id",sessionId);
 }
 
+const gate = document.getElementById("gate");
+const codeInput = document.getElementById("code");
+const loginBtn = document.getElementById("login");
+const gateMsg = document.getElementById("gate-msg");
+
+let accessCode = localStorage.getItem("access_code") || "";
+
+
+function headers() {
+  return {"Content-Type":"application/json","X-Access-Code":accessCode};
+}
+
+async function verifyCode(code) {
+  const res = await fetch("/verify",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({code:code})
+  });
+  return res.ok;
+}
+
+async function tryEnter() {
+  const code = codeInput.value.trim();
+  if (!code) { gateMsg.textContent = "请输入口令"; return; }
+  
+  loginBtn.disabled = true;
+  gateMsg.textContent = "";
+  try {
+    if (await verifyCode(code)) {
+      accessCode = code;
+      localStorage.setItem("access_code",code);
+      gate.classList.add("hide");
+      input.focus();
+    } else {
+      gateMsg.textContent = "口令不正确";
+    }
+  } catch (e) {
+    gateMsg.textContent = "无法连接服务器：" + e.message;
+  } finally {
+    loginBtn.disabled = false;
+  }
+}
+
+loginBtn.onclick = tryEnter;
+codeInput.addEventListener("keydown",e => { if (e.key === "Enter") tryEnter(); });
+
+
+(async () => {
+  if (accessCode && await verifyCode(accessCode)) gate.classList.add("hide");
+})();
+
+// ---------------- 消息渲染 ----------------
 function addMsg(text, cls) {
   const div = document.createElement("div");
   div.className = "msg " + cls;
@@ -76,30 +166,40 @@ function addStatus(text) {
   return div;
 }
 
+// ---------------- 提问 ----------------
 async function ask(question) {
   btn.disabled = true;
-  addMsg(question, "user");
+  hints.style.display = "none";
+  addMsg(question,"user");
   input.value = "";
 
-  let botEl = null;
   try {
-    const res = await fetch("/chat/stream", {
-      method: "POST",
-      headers: {"Content-Type": "application/json"},
-      body: JSON.stringify({question: question, session_id: sessionId})
+    const res = await fetch("/chat/stream",{
+      method:"POST",
+      headers:headers(),
+      body:JSON.stringify({question:question,session_id:sessionId})
     });
+
+    //口令失效（服务端换过口令）→ 退回登录界面
+    if (res.status === 401) {
+      localStorage.removeItem("access_code");
+      accessCode = "";
+      gate.classList.remove("hide");
+      gateMsg.textContent = "口令已失效，请重新输入";
+      return;
+    }
 
     const reader = res.body.getReader();
     const decoder = new TextDecoder("utf-8");
     let buffer = "";
 
     while (true) {
-      const {value, done} = await reader.read();
+      const {value,done} = await reader.read();
       if (done) break;
-      buffer += decoder.decode(value, {stream: true});   // stream:true 防止切坏中文
+      buffer += decoder.decode(value,{stream:true});   // stream:true 防止切坏中文
 
-      const parts = buffer.split("\n\n");                // SSE 用空行分隔事件
-      buffer = parts.pop();                              // 最后一段可能不完整，留到下一轮
+      const parts = buffer.split("\n\n");              // SSE 用空行分隔事件
+      buffer = parts.pop();                            // 最后一段可能不完整，留到下一轮
 
       for (const part of parts) {
         if (!part.startsWith("data: ")) continue;
@@ -108,23 +208,29 @@ async function ask(question) {
         if (ev.type === "status") {
           addStatus("⏳ " + ev.msg);
         } else if (ev.type === "answer") {
-          botEl = addMsg(ev.text, "bot");
+          addMsg(ev.text,"bot");
         } else if (ev.type === "error") {
-          addMsg("出错了：" + ev.msg, "bot");
+          addMsg("出错了：" + ev.msg,"bot");
         }
       }
     }
   } catch (e) {
-    addMsg("请求失败：" + e.message, "bot");
+    addMsg("请求失败：" + e.message,"bot");
   } finally {
     btn.disabled = false;
     input.focus();
   }
 }
 
+// ---------------- 交互绑定 ----------------
 btn.onclick = () => { const q = input.value.trim(); if (q) ask(q); };
-input.addEventListener("keydown", e => {
+input.addEventListener("keydown",e => {
   if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); btn.click(); }
+});
+
+// 示例问题：点一下填进输入框
+document.querySelectorAll(".hint").forEach(b => {
+  b.onclick = () => { input.value = b.textContent; input.focus(); };
 });
 </script>
 </body>
