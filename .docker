@@ -1,0 +1,10 @@
+venv/
+env/
+.git/
+.env
+db/
+__pycache__/
+*.pyc
+测试/
+_backup/
+*.log

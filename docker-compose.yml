@@ -1,0 +1,29 @@
+services:
+  mysql:
+    image: mysql:8.0
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpass_change_me
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: myuser
+      MYSQL_PASSWORD: 换成你的密码
+    volumes:
+      - mysql_data:/var/lib/mysql                              # 数据持久化
+      - ./deploy/init.sql:/docker-entrypoint-initdb.d/init.sql:ro   # 首次启动自动建表
+    restart: always
+
+  app:
+    build: .
+    env_file: .env
+    environment:
+      MYSQL_HOST: mysql            # ← 用服务名，不是 127.0.0.1
+    volumes:
+      - ./data:/app/data           # 语料：改文件后不用重建镜像
+      - ./db:/app/db               # Chroma 持久化，重启不丢
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mysql
+    restart: always
+
+volumes:
+  mysql_data:
