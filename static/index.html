@@ -44,9 +44,17 @@ const input = document.getElementById("input");
 const btn = document.getElementById("send");
 
 // 每个浏览器一个会话：第一次访问生成随机 ID 存在本地，之后一直复用
+function newSessionId() {
+  // crypto.randomUUID 只在 HTTPS 或 localhost 可用；http + IP 访问时会缺失，所以做兜底
+  if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+  const buf = new Uint8Array(16);
+  crypto.getRandomValues(buf);       // getRandomValues 不受安全上下文限制
+  return Array.from(buf,b => b.toString(16).padStart(2,"0")).join("");
+}
+
 let sessionId = localStorage.getItem("session_id");
 if (!sessionId) {
-  sessionId = crypto.randomUUID();
+  sessionId = newSessionId();
   localStorage.setItem("session_id", sessionId);
 }
 
