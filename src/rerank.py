@@ -62,9 +62,9 @@ class Rerank:
         }
         
         if RERANK_API_STYLE == "dashscope":
-            playoad ={
+            payload ={
                 "model":RERANK_MODEL,
-                "input":{"query":query,"document":docs},
+                "input":{"query":query,"documents":docs},
                 "parameters":{"top_n":len(docs),"return_documents":False},
             }
             resp = requests.post(RERANK_API_URL,json=payload,headers=headers,timeout=30)
@@ -84,7 +84,7 @@ class Rerank:
             resp.raise_for_status()
             rows = resp.json()["results"]
         
-        scores = [0,0] *len(docs) 
+        scores = [0.0] *len(docs) 
         
         for row in rows:
             scores[row["index"]] = float(row["relevance_score"])
