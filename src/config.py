@@ -23,10 +23,10 @@ CHUNK_OVERLAP=int(os.getenv("CHUNK_OVERLAP","50"))
 top_k = int(os.getenv("TOP_K", "4"))
 
 #重排
-RERANK_BACKEND = os.getenv("RERANK_BACKEND", "local")   # local=本地模型 / api=云端接口 / none=关闭重排
-RERANK_MODEL = os.getenv("RERANK_MODEL", "BAAI/bge-reranker-v2-m3")  # 本地填HF模型名或本地目录；API填服务商模型名
+RERANK_BACKEND = os.getenv("RERANK_BACKEND", "api")   # local=本地模型 / api=云端接口 / none=关闭重排
+RERANK_MODEL = os.getenv("RERANK_MODEL", "jina-reranker-v3.5")  # 本地填HF模型名或本地目录；API填服务商模型名
 RERANK_TOP_N = int(os.getenv("RERANK_TOP_N", "4"))
-RERANK_API_URL = os.getenv("RERANK_API_URL", "https://api.siliconflow.cn/v1/rerank")
+RERANK_API_URL = os.getenv("RERANK_API_URL", "https://api.jina.ai/v1/rerank")
 RERANK_API_KEY = os.getenv("RERANK_API_KEY", "")
 RERANK_USE_FP16 = os.getenv("RERANK_USE_FP16", "false").lower() == "true"
 RERANK_API_STYLE = os.getenv("RERANK_API_STYLE", "cohere")  # cohere=SiliconFlow/Jina/TEI，dashscope=阿里百炼
