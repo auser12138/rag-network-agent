@@ -84,7 +84,7 @@ class Rerank:
             resp.raise_for_status()
             rows = resp.json()["results"]
         
-        scores = [0,0] *len(docs)
+        scores = [0,0] *len(docs) 
         
         for row in rows:
             scores[row["index"]] = float(row["relevance_score"])
