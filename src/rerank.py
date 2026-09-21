@@ -67,7 +67,7 @@ class Rerank:
                 "input":{"query":query,"document":docs},
                 "parameters":{"top_n":len(docs),"return_documents":False},
             }
-            resp = requests.post(RERANK_API_KEY,json = payload,headers = headers,time_out=30)
+            resp = requests.post(RERANK_API_URL,json=payload,headers=headers,timeout=30)
             resp.raise_for_status()
             rows = resp.json()["output"]["results"]
             
