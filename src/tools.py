@@ -1,5 +1,5 @@
 #工具库
-from .jiansuo import xiangsibijiao,BM25_bijiao
+from .jiansuo import xiangsibijiao,BM25_bijiao,get_rerank
 from .tool import registry
 from .config import TOOL_TOP_K,TOOP_CHUNK_CHARS
 
@@ -11,13 +11,19 @@ def create_knowledge(bm25):
             vector_results=vector_results,
             bm25=bm25,
             top_k =20,
-            final_top_k=TOOL_TOP_K,
+            final_top_k=20,
         )
     
         if not results:
             return {"found":False,
                     "message":"知识库中未找到相关资料"
                     }  
+            
+        results = get_rerank().rerank_re(
+            query=query,
+            rrf_result=results,
+            top_k=TOOL_TOP_K,
+        )
         
         know = []
         for i,item in enumerate(results,start=1):
