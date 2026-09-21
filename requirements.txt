@@ -18,6 +18,3 @@ pymysql
 # 配置
 python-dotenv
 
-# 可选：本地重排模型（云服务器上不装，可省 5GB 磁盘 + 2~3GB 内存）
-# FlagEmbedding
-# torch
