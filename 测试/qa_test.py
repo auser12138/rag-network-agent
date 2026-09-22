@@ -1,12 +1,99 @@
-from src.xiangliangku import get_biao
-from src.repos_sql import list_file
-from collections import Counter
+from src.diag_tools import (
+    ping_host,
+    dns_lookup,
+    tcp_port_check,
+    read_log,
+    arp_check,
+    route_check,
+    create_diag_tools,
+)
 
-biao = get_biao("kb1")
-print("Chroma 总块数：", biao.count())
+from src.tool import registry
 
-res = biao.get(include=["metadatas"])
-for s,n in Counter(m["source"] for m in res["metadatas"]).items():
-    print(f"  {s}: {n} 块")
 
-print("MySQL active：", [r["source"] for r in list_file("kb1")])
+def main():
+
+    # =========================
+    # 1. Registry
+    # =========================
+
+    print("\n===== Registry =====")
+
+    create_diag_tools()
+
+    print(
+        list(registry.tools.keys())
+    )
+
+
+    # =========================
+    # 2. Ping
+    # =========================
+
+    print("\n===== Ping =====")
+
+    print(
+        ping_host(
+            "127.0.0.1",
+            count=2,
+            timeout=5
+        )
+    )
+
+
+    # =========================
+    # 3. DNS
+    # =========================
+
+    print("\n===== DNS =====")
+
+    print(
+        dns_lookup(
+            "localhost"
+        )
+    )
+
+
+    # =========================
+    # 4. TCP
+    # =========================
+
+    print("\n===== TCP =====")
+
+    print(
+        tcp_port_check(
+            "127.0.0.1",
+            8000,
+            timeout=3
+        )
+    )
+
+
+    # =========================
+    # 5. ARP
+    # =========================
+
+    print("\n===== ARP =====")
+
+    print(
+        arp_check(
+            "192.168.1.1"
+        )
+    )
+
+
+    # =========================
+    # 6. Route
+    # =========================
+
+    print("\n===== Route =====")
+
+    print(
+        route_check(
+            "8.8.8.8"
+        )
+    )
+
+
+if __name__ == "__main__":
+    main()

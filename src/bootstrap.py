@@ -5,6 +5,7 @@ from .bm_25 import BM25
 from .tools import create_knowledge
 from . import xiangliangku as vdb
 from .diag_tools import create_diag_tools
+from .tool import registry
 
 _index_cache = {}      # {知识库名: BM25 索引}，每个库一份，懒加载
 
@@ -24,7 +25,7 @@ def setup(collection=COLLECTION_NAME):
     create_knowledge(bm25)
     
     create_diag_tools()  
-    print(f"[装配] {collection} 就绪，可用工具：knowledge")
+    print(f"[装配] {collection} 就绪，可用工具：{list(registry.tools)}")
     return bm25
 
 

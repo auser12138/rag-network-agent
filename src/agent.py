@@ -20,6 +20,8 @@ def run_agent_events(question:str,history=None,max_tep:int = 5):
     
     messages.append({"role":"user","content":question})
     
+    yield {"type":"status","msg":"正在分析问题…"}
+    
     for step in range(max_tep):
         #① 调用模型
         try:

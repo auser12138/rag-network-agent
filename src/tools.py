@@ -15,9 +15,7 @@ def create_knowledge(bm25):
         )
     
         if not results:
-            return {
-                    "message":"知识库中未找到相关资料"
-                    }  
+            return "知识库中未找到相关资料"
             
         results = get_rerank().rerank_re(
             query=query,

@@ -133,6 +133,80 @@ def read_log(path,keyword="",lines=50):
         return f"没有匹配的日志行（关键字：{keyword}）"
     return f"{path} 最后 {len(picked)} 行：\n" + "\n".join(picked)
 
+# ---------------- ⑤ ARP / 邻居表 ----------------
+def arp_check(host,timeout=5):
+    """查邻居表里有没有目标 IP 的 MAC 记录
+    
+    用途：ping 不通时区分"主机不在线"还是"主机在线但禁 ICMP"
+    """
+    host = _check_host(host)
+    
+    if os.name == "nt":
+        cmd = ["arp","-a",host]
+    else:
+        cmd = ["ip","neigh","show",host]        #iproute2 提供的命令
+    
+    try:
+        proc = subprocess.run(cmd,capture_output=True,text=True,timeout=timeout)
+    except FileNotFoundError:
+        return "系统里没有 ip / arp 命令（容器镜像需要装 iproute2）"
+    except subprocess.TimeoutExpired:
+        return f"查询邻居表超时（{timeout}s）"
+    
+    out = ((proc.stdout or "") + (proc.stderr or "")).strip()
+    
+    upper_out = out.upper()
+
+    if (
+        not out
+        or "FAILED" in upper_out
+        or "INCOMPLETE" in upper_out
+        or "未找到 ARP 项" in out
+        ):
+            return (
+                f"ARP 检查 {host}：邻居表中没有有效 MAC 记录\n"
+                f"原始输出：{out[:200] or '(空)'}"
+            )
+    
+    mac = re.search(
+    r"([0-9a-f]{2}(?::|-)"
+    r"[0-9a-f]{2}(?::|-)"
+    r"[0-9a-f]{2}(?::|-)"
+    r"[0-9a-f]{2}(?::|-)"
+    r"[0-9a-f]{2}(?::|-)"
+    r"[0-9a-f]{2})",
+    out,
+    re.I
+    )
+    return (
+        f"ARP 检查 {host}：邻居表中有 MAC 记录 {mac.group(1) if mac else '(未解析出)'}\n"
+        f"判断：目标二层可达（主机在线），ping 不通说明它禁用了 ICMP 或被防火墙丢弃\n"
+        f"原始输出：{out[:200]}"
+    )
+
+
+# ---------------- ⑥ 路由 ----------------
+def route_check(dest,timeout=5):
+    """查看到目标的路由：走哪个网卡、下一跳是谁"""
+    dest = _check_host(dest)
+    
+    if os.name == "nt":
+        cmd = ["tracert","-h","1","-w","1000",dest]     #Windows 看第一跳
+    else:
+        cmd = ["ip","route","get",dest]                 #Linux 直接查选路结果
+    
+    try:
+        proc = subprocess.run(cmd,capture_output=True,text=True,timeout=timeout)
+    except FileNotFoundError:
+        return "系统里没有 ip / tracert 命令（容器镜像需要装 iproute2）"
+    except subprocess.TimeoutExpired:
+        return f"路由查询超时（{timeout}s）"
+    
+    out = ((proc.stdout or "") + (proc.stderr or "")).strip()
+    if not out:
+        return f"路由查询 {dest}：没有返回结果"
+    return f"到 {dest} 的路由：\n{out[:400]}"
+
 
 def _tail(path: Path,max_lines: int):
     
@@ -166,4 +240,14 @@ def create_diag_tools():
         name="read_log",
         description="读取日志文件的最近内容，可按关键字过滤。参数：path（日志文件路径）、keyword（可选，过滤关键字）、lines（返回行数，默认50）",
         func=read_log,
+    )
+    registry.regist(
+        name="arp_check",
+        description="查询邻居表（ARP）里有没有目标 IP 的 MAC 记录，用于 ping 不通时判断主机是否在线。参数：host（IP）",
+        func=arp_check,
+    )
+    registry.regist(
+        name="route_check",
+        description="查看发往目标地址的路由：走哪个网卡、下一跳是谁。参数：dest（目标 IP 或域名）",
+        func=route_check,
     )

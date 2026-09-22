@@ -26,7 +26,7 @@ top_k = int(os.getenv("TOP_K", "4"))
 RERANK_BACKEND = os.getenv("RERANK_BACKEND", "api")   # local=本地模型 / api=云端接口 / none=关闭重排
 RERANK_MODEL = os.getenv("RERANK_MODEL", "gte-rerank-v2")  # 本地填HF模型名或本地目录；API填服务商模型名
 RERANK_TOP_N = int(os.getenv("RERANK_TOP_N", "4"))
-RERANK_API_URL = os.getenv("RERANK_API_URL", "https://api.siliconflow.cn/v1/rerank")
+RERANK_API_URL = os.getenv("RERANK_API_URL", "https://dashscope.aliyuncs.com/api/v1/services/rerank/text-rerank/text-rerank")
 RERANK_API_KEY = os.getenv("RERANK_API_KEY", "")
 RERANK_USE_FP16 = os.getenv("RERANK_USE_FP16", "false").lower() == "true"
 RERANK_API_STYLE = os.getenv("RERANK_API_STYLE", "dashscope")  # cohere=SiliconFlow/Jina/TEI，dashscope=阿里百炼
