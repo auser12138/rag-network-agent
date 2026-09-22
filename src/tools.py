@@ -1,7 +1,7 @@
 #工具库
 from .jiansuo import xiangsibijiao,BM25_bijiao,get_rerank
 from .tool import registry
-from .config import TOOL_TOP_K,TOOP_CHUNK_CHARS
+from .config import TOOL_TOP_K,TOOL_CHUNK_CHARS
 
 def create_knowledge(bm25):
     def knowledge(query):
@@ -15,7 +15,7 @@ def create_knowledge(bm25):
         )
     
         if not results:
-            return {"found":False,
+            return {
                     "message":"知识库中未找到相关资料"
                     }  
             
@@ -28,8 +28,8 @@ def create_knowledge(bm25):
         know = []
         for i,item in enumerate(results,start=1):
             text = item["text"]
-            if len(text) >TOOP_CHUNK_CHARS:
-                text = text[:TOOP_CHUNK_CHARS]
+            if len(text) >TOOL_CHUNK_CHARS:
+                text = text[:TOOL_CHUNK_CHARS]+"...已截断"
             
             know.append(                
                 f"[资料{i}]\n"

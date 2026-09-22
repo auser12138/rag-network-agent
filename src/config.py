@@ -42,7 +42,7 @@ MYSQL_CHARSET = "utf8mb4"
 
 #工具输出
 TOOL_TOP_K = int(os.getenv("TOOL_TOP_K","6"))
-TOOP_CHUNK_CHARS = int(os.getenv("TOOP_CHUNK_CHARS","800"))
+TOOL_CHUNK_CHARS = int(os.getenv("TOOL_CHUNK_CHARS","800"))
 OBSERVATION_MAX = int(os.getenv("OBSERVATION_MAX", "4000"))
 
 #路径

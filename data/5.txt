@@ -1,0 +1,45 @@
+BGP 邻居震荡排查手册
+1. 故障现象
+现象一：BGP 邻居状态在 Active 和 Established 之间频繁切换，路由表频繁刷新。
+
+现象二：日志显示 BGP/4/PEER_STATE_CHANGE: BGP peer X.X.X.X state changed from Established to Active. Reason: Peer reset。
+
+现象三：display bgp peer 显示邻居 Up/Down 时间极短，频繁断开重连。
+
+2. 可能原因
+原因一：接口 MTU 配置不当，TCP 握手成功但携带大载荷的 BGP Update 报文被丢弃。
+
+原因二：Keepalive/Holdtime 参数不匹配，Holdtime 过小导致邻居超时断开。
+
+原因三：IP 地址配置冲突，如 Loopback 接口与物理接口 IP 冲突，导致 TCP 连接不稳定。
+
+3. 排查步骤
+检查 BGP 邻居状态与错误码
+执行：display bgp peer 10.1.1.2
+关注：Up/Down 时间、Last Error 字段
+异常判断：若存在 Hold Timer Expired 或 Notification 错误，需针对性排查。
+
+检查接口 MTU
+执行：display interface GigabitEthernet 1/0/1
+关注：MTU 值
+异常判断：两端 MTU 不一致可能导致大包被丢弃，BGP 邻居虽建立但 Update 报文无法传递。
+
+检查 Keepalive/Holdtime 配置
+执行：display current-configuration configuration bgp
+关注：peer X.X.X.X timer keepalive X hold X
+异常判断：两端 Holdtime 不一致或 Holdtime 小于 3 秒时极易导致邻居超时断开。
+
+检查 IP 地址冲突
+执行：display ip interface brief
+关注：各接口 IP 地址分配
+异常判断：若 Loopback 接口与物理接口 IP 冲突，会导致路由异常和 TCP 连接不稳定。
+
+4. 处理方案
+如果是原因一：调整两端接口 MTU 为一致值，或在 BGP 邻居配置下启用 tcp mss-adjust。
+
+如果是原因二：统一两端 timer keepalive 和 timer hold 参数，建议 Holdtime 不低于 9 秒。
+
+如果是原因三：修正冲突的 IP 地址配置，删除 Loopback 上错误的 IP，恢复物理接口正确地址。
+
+5. 注意事项
+BGP 邻居震荡会导致路由表频繁刷新，影响业务转发。处理前应记录当前路由表状态，操作后验证路由收敛情况。修改 MTU 或 TCP 参数需两端协调操作，单侧修改可能加剧问题。排查时应先确认底层链路稳定，再检查 BGP 协议层参数。

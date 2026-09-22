@@ -1,0 +1,45 @@
+OSPF 邻居建立失败排查手册
+1. 故障现象
+现象一：display ospf peer 回显中无邻居信息或 State 字段非 Full。
+
+现象二：邻居状态长期停留在 Init、ExStart 或 Exchange 状态，无法达到 Full。
+
+现象三：display ospf error 显示 Bad authentication type 或 Bad authentication key 计数持续增长。
+
+2. 可能原因
+原因一：两端 OSPF 区域 ID、区域类型（NSSA/STUB/普通区域）配置不一致。
+
+原因二：OSPF 认证信息不匹配，包括认证类型和密钥不一致。
+
+原因三：接口未使能 OSPF 进程，或接口网络类型不匹配（如一端广播一端 NBMA）。
+
+3. 排查步骤
+检查邻居状态
+执行：display ospf peer
+关注：State 字段、Router ID、Address
+异常判断：State 非 Full 则邻居关系未建立；若邻居时有时无，可能存在震荡。
+
+检查接口是否使能 OSPF
+执行：display ospf 1 interface
+关注：Interface 字段和 State 字段
+异常判断：接口未出现在列表中说明未使能 OSPF，需在 OSPF 进程中执行 network 命令。
+
+检查 OSPF 错误统计
+执行：display ospf 1 error
+关注：Bad authentication type、Bad authentication key、Bad area id
+异常判断：认证错误计数持续增长说明两端认证信息不匹配。
+
+检查 Router ID 冲突
+执行：display ospf brief
+关注：Router ID 是否与对端或网络中其他设备冲突
+异常判断：Router ID 重复会导致邻居无法建立。
+
+4. 处理方案
+如果是原因一：在 OSPF 进程视图下统一两端设备的区域 ID 和区域类型配置。
+
+如果是原因二：在 OSPF 进程视图下执行 authentication-mode 命令，确保两端认证类型和密钥一致。
+
+如果是原因三：在 OSPF 进程中执行 network network-address wildcard-mask 命令使能接口，确保两端接口网络类型匹配。
+
+5. 注意事项
+修改 OSPF 认证或区域配置可能导致邻居重建和路由短暂中断，建议在维护窗口操作。OSPF 邻居建立失败会影响路由收敛，排查时需同时关注路由表变化。若邻居震荡频繁，需检查底层链路稳定性和 Hold Timer 配置。

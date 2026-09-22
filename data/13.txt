@@ -1,0 +1,49 @@
+ Linux 网卡状态异常排查手册
+1. 故障现象
+网络中断，ping 不通网关或外网
+
+执行 ip link 显示网卡状态 DOWN 或 NO-CARRIER
+
+日志出现 link is not ready、NIC Link is Down
+
+2. 可能原因
+网卡被管理性关闭，如 ifdown 或 nmcli 禁用
+
+网线松动、损坏或交换机端口故障
+
+网卡驱动异常或硬件故障
+
+网卡配置文件错误，如 ONBOOT=no
+
+3. 排查步骤
+检查网卡链路状态
+执行：ip link show eth0
+关注：state UP/DOWN、NO-CARRIER 标志
+异常判断：NO-CARRIER 说明物理链路未连通
+
+检查网卡是否被管理性关闭
+执行：nmcli device status 或 ifconfig eth0
+关注：是否显示 disconnected 或 DOWN
+异常判断：管理性关闭需重新启用
+
+检查网卡驱动与硬件
+执行：ethtool eth0 和 dmesg | grep eth0
+关注：Link detected、驱动报错信息
+异常判断：Link detected: no 说明物理层问题
+
+检查网卡配置文件
+执行：cat /etc/sysconfig/network-scripts/ifcfg-eth0
+关注：ONBOOT、BOOTPROTO 配置
+异常判断：ONBOOT=no 会导致开机不启动网卡
+
+4. 处理方案
+管理性关闭：执行 ip link set eth0 up 或 nmcli device connect eth0
+
+物理链路：更换网线，检查交换机端口
+
+驱动异常：更新或重新加载网卡驱动
+
+配置错误：修改 ifcfg 文件，设置 ONBOOT=yes 并重启网络
+
+5. 注意事项
+远程操作网卡时需谨慎，禁用网卡会导致 SSH 断连。建议通过带外管理或控制台操作。修改网络配置后需验证连通性，避免配置错误导致失联。

@@ -1,0 +1,59 @@
+ DNS 解析失败排查手册
+1. 故障现象
+ping 域名失败，但直接 ping IP 可以通
+
+报错关键字：Name or service not known、Temporary failure in name resolution
+
+应用访问超时，日志显示 DNS timeout 或 resolver 失败
+
+2. 可能原因
+DNS 服务器地址配置错误或服务器不可达
+
+域名解析记录缺失或配置错误
+
+本地 DNS 缓存污染或 hosts 文件错误
+
+防火墙阻断 UDP/TCP 53 端口
+
+DNS 服务器负载过高或服务异常
+
+3. 排查步骤
+测试 DNS 服务器连通性
+执行：ping DNS服务器IP
+关注：是否可达，丢包率
+异常判断：DNS 服务器不可达则解析必然失败
+
+使用 dig 或 nslookup 测试解析
+执行：dig @DNS服务器IP 域名 或 nslookup 域名 DNS服务器IP
+关注：返回状态 NOERROR、NXDOMAIN、SERVFAIL
+异常判断：SERVFAIL 说明服务器异常，NXDOMAIN 说明记录不存在
+
+检查本地 DNS 配置
+执行：cat /etc/resolv.conf
+关注：nameserver 地址是否正确
+异常判断：地址错误或指向不可用服务器需修正
+
+检查 hosts 文件
+执行：cat /etc/hosts
+关注：是否存在错误映射
+异常判断：错误映射会覆盖 DNS 解析结果
+
+抓包检查 53 端口
+执行：tcpdump -i eth0 port 53
+关注：是否有请求发出、是否有响应
+异常判断：有请求无响应说明被阻断或服务器未回包
+
+4. 处理方案
+DNS 地址错误：修改 /etc/resolv.conf 或网络配置
+
+记录缺失：在 DNS 服务器添加正确解析记录
+
+缓存污染：清除本地缓存，重启 nscd 或 systemd-resolved
+
+防火墙阻断：按变更流程放行 53 端口
+
+DNS 服务器异常：切换备用 DNS 或修复服务
+
+5. 注意事项
+修改 /etc/resolv.conf 可能被 NetworkManager 或 cloud-init 覆盖，需同步修改持久化配置。DNS 变更影响面广，建议在维护窗口操作。排查时先确认 IP 连通性，再检查 DNS 协议层。
+

@@ -1,0 +1,49 @@
+网关不可达排查手册
+1. 故障现象
+同网段内主机可以互通，但 ping 网关地址不通
+
+跨网段访问失败，返回 Destination Host Unreachable
+
+部分主机 ARP 表中网关 MAC 为空或异常
+
+2. 可能原因
+网关设备或 SVI 接口 Down，三层接口未激活
+
+VRRP 主备切换异常，虚拟 IP 无法响应
+
+ARP 冲突或 ARP 表项错误，网关 MAC 被错误绑定
+
+网关设备路由表缺失，回包无法送达
+
+3. 排查步骤
+测试网关连通性
+执行：ping 网关IP
+关注：是否 100% 丢包，是否有 ARP 请求无响应
+异常判断：完全不通说明网关本身或链路有问题
+
+检查 ARP 表
+执行：arp -a 或 display arp
+关注：网关 IP 对应的 MAC 是否存在、是否冲突
+异常判断：MAC 为空或频繁变化说明 ARP 异常
+
+检查 SVI 与 VRRP 状态
+执行：display interface Vlanif[ID] 和 display vrrp
+关注：接口状态、VRRP 主备状态
+异常判断：SVI Down 或 VRRP 无 Master 说明网关不可用
+
+检查网关设备路由
+执行：display ip routing-table
+关注：是否存在回程路由
+异常判断：缺少目标网段路由会导致单通
+
+4. 处理方案
+SVI Down：激活接口并检查 VLAN 是否存在
+
+VRRP 异常：修复 VRRP 配置，确保有 Master 设备
+
+ARP 冲突：清除错误 ARP 表项，排查冲突主机
+
+路由缺失：补充静态路由或调整动态路由配置
+
+5. 注意事项
+网关变更会影响整个网段通信，操作前需确认维护窗口。清除 ARP 表会导致短暂断流，生产环境谨慎执行。VRRP 切换可能引起主备设备角色变化，需验证业务恢复情况。

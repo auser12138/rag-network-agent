@@ -1,0 +1,82 @@
+[
+  {
+    "question": "交换机接口 Down 怎么排查",
+    "expected_source": "yunwei.md"
+  },
+  {
+    "question": "链路丢包与延迟怎么排查",
+    "expected_source": "链路丢包与延迟.md"
+  },
+  {
+    "question": "不同网段之间访问不了，连出口地址都 ping 不通，怎么查",
+    "expected_source": ["VLAN间无法通信.md", "网关不可达.md"]
+  },
+  {
+    "question": "OSPF 邻居一直起不来怎么办",
+    "expected_source": "OSPF邻居失败.md"
+  },
+  {
+    "question": "两条链路老是在来回切换怎么回事",
+    "expected_source": "BGP邻居震荡.md"
+  },
+  {
+    "question": "交换机灯闪得厉害，网一会通一会断",
+    "expected_source": "STP环路与震荡.md"
+  },
+  {
+    "question": "光模块收发光异常怎么排查",
+    "expected_source": "光模块收发光异常.md"
+  },
+  {
+    "question": "DNS 解析失败怎么排查",
+    "expected_source": "DNS解析失败.md"
+  },
+  {
+    "question": "端口连不上，怎么知道是墙还是服务没起",
+    "expected_source": ["端口不通.md", "防火墙阻断.md"]
+  },
+  {
+    "question": "负载均衡后端异常怎么排查",
+    "expected_source": "负载均衡后端异常.md"
+  },
+  {
+    "question": "服务器网口灯不亮，网络不通怎么查",
+    "expected_source": "Linux网卡状态异常.md"
+  },
+  {
+    "question": "机器突然写不了文件，报空间不足，怎么处理",
+    "expected_source": "磁盘空间满.md"
+  },
+  {
+    "question": "CPU / 内存负载过高怎么排查",
+    "expected_source": "CPU内存负载过高.md"
+  },
+  {
+    "question": "服务启动失败怎么排查",
+    "expected_source": "服务启动失败.md"
+  },
+  {
+    "question": "系统时间不同步怎么排查",
+    "expected_source": "系统时间不同步.md"
+  },
+  {
+    "question": "网站打开特别慢，但服务器 CPU 内存都不高，怎么定位",
+    "expected_source": "服务响应慢应用层定位.md"
+  },
+  {
+    "question": "变更后出问题怎么回滚，故障怎么分级上报",
+    "expected_source": ["变更管理与回滚.md", "故障分级与上报.md"]
+  },
+  {
+    "question": "Kubernetes Pod 一直 CrashLoopBackOff 怎么排查",
+    "expected_source": "NONE"
+  },
+  {
+    "question": "MySQL 主从复制延迟很大怎么办",
+    "expected_source": "NONE"
+  },
+  {
+    "question": "Redis 集群脑裂怎么处理",
+    "expected_source": "NONE"
+  }
+]

@@ -1,0 +1,45 @@
+VLAN 间无法通信排查手册
+1. 故障现象
+现象一：同一 VLAN 内设备可以互通，但不同 VLAN 间设备 ping 不通。
+
+现象二：跨 VLAN 访问时请求超时或返回“Destination Host Unreachable”。
+
+现象三：Trunk 链路上部分 VLAN 业务正常，另一些 VLAN 业务中断。
+
+2. 可能原因
+原因一：三层交换机未启用 SVI 接口或未配置 IP 地址，导致无法进行 VLAN 间路由。
+
+原因二：Trunk 端口未允许相应 VLAN 通过，或两端 PVID 配置不一致。
+
+原因三：接入交换机未配置默认路由指向核心交换机，回包无法送达。
+
+3. 排查步骤
+检查 SVI 接口状态
+执行：display interface Vlanif[ID]
+关注：接口状态是否 UP，是否已配置 IP 地址
+异常判断：SVI 接口 Down 或未配置 IP 地址说明三层路由未就绪。
+
+检查 Trunk 端口允许 VLAN 列表
+执行：display port vlan 或 display interface brief
+关注：Trunk 端口的 PVID 和允许通过的 VLAN 列表
+异常判断：两端 PVID 不一致或允许列表不包含目标 VLAN 会导致通信中断。
+
+检查路由表
+执行：display ip routing-table
+关注：是否存在目标 VLAN 网段的路由条目
+异常判断：无对应路由条目说明三层转发不可用。
+
+检查接入交换机默认路由
+执行：display current-configuration | include ip route-static
+关注：是否配置了指向核心交换机的默认路由
+异常判断：接入交换机若无默认路由，回包无法送达，表现为单通。
+
+4. 处理方案
+如果是原因一：创建 SVI 接口并配置 IP 地址，确保接口状态为 UP。
+
+如果是原因二：在 Trunk 端口执行 port trunk allow-pass vlan [ID] 允许目标 VLAN 通过，统一两端 PVID。
+
+如果是原因三：在接入交换机上配置 ip route-static 0.0.0.0 0.0.0.0 [核心交换机IP] 指向网关。
+
+5. 注意事项
+修改 Trunk 端口允许 VLAN 列表可能导致业务中断，建议在维护窗口操作。配置 SVI 接口前确认 VLAN 已在全局创建并激活。跨 VLAN 通信故障排查应遵循“先查三层、再查二层”的顺序，避免在二层反复排查而忽略路由问题。
