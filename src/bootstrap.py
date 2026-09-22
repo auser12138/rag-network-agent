@@ -4,6 +4,7 @@ from .config import COLLECTION_NAME
 from .bm_25 import BM25
 from .tools import create_knowledge
 from . import xiangliangku as vdb
+from .diag_tools import create_diag_tools
 
 _index_cache = {}      # {知识库名: BM25 索引}，每个库一份，懒加载
 
@@ -21,6 +22,8 @@ def setup(collection=COLLECTION_NAME):
     """启动装配：建索引 + 注册工具"""
     bm25 = get_bm25(collection)
     create_knowledge(bm25)
+    
+    create_diag_tools()  
     print(f"[装配] {collection} 就绪，可用工具：knowledge")
     return bm25
 
@@ -29,4 +32,5 @@ def refresh(collection=COLLECTION_NAME):
     """同步入库之后调用：重建索引并重新注册工具（让新文件立刻能被 BM25 搜到）"""
     bm25 = get_bm25(collection,force=True)
     create_knowledge(bm25)
+    create_diag_tools() 
     return bm25

@@ -51,3 +51,6 @@ db_dir = BASE_DIR /"db"
 COLLECTION_NAME = "kb1"
 #访问口令（为空时不校验，部署时在 .env 里设置）
 ACCESS_CODE = os.getenv("ACCESS_CODE","")
+
+#日志目录白名单（read_log 只允许读这些目录，逗号分隔）
+LOG_DIR_ALLOWLIST = os.getenv("LOG_DIR_ALLOWLIST","/var/log,/app/logs").split(",")
