@@ -58,9 +58,40 @@ def merge_broken_lines(text,max_len=20):
         out.append(line)
     return "\n".join(out)
 
+def drop_toc_lines(text,min_dots=5):
+    """去掉目录行（带点线引导符的行）
+    
+    PDF 目录的特征：标题 + 一串点 + 页码
+    例：1.1 basename ................ 5
+    """
+    keep = []
+    for line in text.split("\n"):
+        #连续 5 个以上的点/中圆点/省略号 → 判断为目录行
+        if re.search(r"[.·…．]{5,}",line):
+            continue
+        keep.append(line)
+    return "\n".join(keep)
+
+
+def drop_toc_pages(text,threshold=0.5):
+    """整页是目录的话，跳过这一页
+    
+    判断依据：目录行占比超过 threshold
+    """
+    lines = [l for l in text.split("\n") if l.strip()]
+    if not lines:
+        return text
+    
+    toc_count = sum(1 for l in lines if re.search(r"[.·…．]{5,}",l))
+    if toc_count / len(lines) >= threshold:
+        return ""            #整页丢弃
+    return text
+
 #数据清洗
 def clean_text(text,merge_lines=False):
     text =  normalize_newlines(text)
+    text = drop_toc_pages(text)
+    text = drop_toc_lines(text)
     text = page_lines(text)
     text = drop_repeated_lines(text)
     if merge_lines:
