@@ -16,7 +16,7 @@ class Dacome:
     def __repr__(self):
         return f"Dacome(source={self.source!r},chars={len(self.content)},hash={self.file_hash[:8]})"    
     
-text_houzhui={".txt",".md" }
+text_houzhui={".txt",".md",".pdf",".docx",".csv",".html",".log",".htm"}
 
 #文件进行检索
 def lodaer_file(path: Path):

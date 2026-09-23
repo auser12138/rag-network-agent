@@ -12,7 +12,7 @@ from langchain_community.document_loaders import (
     CSVLoader,         #csv
 )
 
-from .cleaner import clean_text
+from .clear import clean_text
 
 
 LOADERS = {
