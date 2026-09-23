@@ -15,7 +15,7 @@ def blank_lines(text,maxblank=1):
 #去除页码行
 def page_lines(text):
     patterns = [
-        re.compile(r"^\s第\s*\d+\s页\s*(共\s*\d+\s*页)?\s**$"),
+        re.compile(r"^\s第\s*\d+\s页\s*(共\s*\d+\s*页)?\s*$"),
         re.compile(r"^\s第\s*\d+\s页\s*[，,/]\s*共\s*\d+\s*页\s*$"),
         re.compile(r"^\sPage\s+\d+(\s+of\s+\d)?s*$",re.I),
         re.compile(r"^\s*\d+\s*/\s*\d+\s*$"),
