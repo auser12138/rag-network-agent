@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
 import pypdf
-from src.cleaner import clean_text
+from src.clear import clean_text
 
 
 def main():

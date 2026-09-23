@@ -37,9 +37,9 @@ def drop_repeated_lines(text,min_count=5,min_len=2,max_len=40):
     count = {}
     for line in lines:
         s =  line.strip()
-        if min_count<=len(s)<=max_len:
+        if min_len<=len(s)<=max_len:
             count[s] = count.get(s,0) +1
-    repeated = {s for s,c in count.items() if c >=min_len}
+    repeated = {s for s,c in count.items() if c >=min_count}
     if not repeated:
         return text
     return "\n".join(l for l in lines if l.strip() not in repeated)
