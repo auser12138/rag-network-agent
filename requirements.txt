@@ -17,4 +17,6 @@ pymysql
 
 # 配置
 python-dotenv
-
+langchain-community
+pypdf
+docx2txt

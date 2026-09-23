@@ -3,6 +3,7 @@
 #防重复，使用哈希计算出文档的哈希值，文档变动哈希值也会变动
 from pathlib import Path
 import hashlib
+from .loaders import load_text 
 
 #定义输出样式
 class Dacome:
@@ -18,11 +19,8 @@ class Dacome:
 text_houzhui={".txt",".md" }
 
 #文件进行检索
-def lodaer_file(path:Path):
-    try:
-        return path.read_text(encoding="UTF-8")
-    except UnicodeDecodeError:
-        return path.read_text(encoding="gbk")
+def lodaer_file(path: Path):
+    return load_text(path)
 
 #计算文件哈希
 def load_file_hash(path:Path):
